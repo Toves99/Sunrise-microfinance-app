@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "584445569008",
+    "firebase_url": "https://microfinance-1ae96-default-rtdb.firebaseio.com",
+    "project_id": "microfinance-1ae96",
+    "storage_bucket": "microfinance-1ae96.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:584445569008:android:b1320a68f4b8c6640b9f35",
+        "android_client_info": {
+          "package_name": "com.example.microfinance"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB_swg4YzaohOEoZHWWWPzhI2hCCG6BtlA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
