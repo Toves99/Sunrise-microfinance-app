@@ -1,18 +1,18 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:microfinance/payloan.dart';
+import 'package:microfinance/admin/savings.dart';
+import 'package:microfinance/admin/users.dart';
 import 'package:microfinance/requestloan.dart';
 import 'package:microfinance/save.dart';
-import 'package:microfinance/savings.dart';
-import 'package:microfinance/subscribenow.dart';
-import 'package:microfinance/subscription.dart';
 import 'package:microfinance/updateaccount.dart';
 import 'package:microfinance/userlogin.dart';
 
-import 'loanbalance.dart';
-import 'loanlimit.dart';
+import '../loanbalance.dart';
+import '../loanlimit.dart';
+import 'announcement.dart';
+import 'eventitems.dart';
+import 'loan.dart';
 
 void main() {
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
@@ -107,29 +107,25 @@ class _AdminDashboardState extends State<AdminDashboard> {
                   crossAxisSpacing: 40,
                   mainAxisSpacing: 30,
                   children: [
-                    itemDashboard('Users',CupertinoIcons.money_dollar_circle, Colors.deepOrange, () {
+                    itemDashboard('Users',CupertinoIcons.person, Colors.deepOrange, () {
                       // Navigate to another page when My Savings is clicked
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => MySavings()));
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const Users()));
                     }),
-                    itemDashboard('User Savings', CupertinoIcons.checkmark_circle_fill, Colors.green,(){
+                    itemDashboard('User Savings', CupertinoIcons.suit_heart_fill, Colors.green,(){
                       // Navigate to another page when loan balance is clicked
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => LoanBalance()));
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const Savings()));
                     }),
-                    itemDashboard('User Loans', CupertinoIcons.briefcase_fill, Colors.purple,(){
+                    itemDashboard('User Loans', CupertinoIcons.creditcard_fill, Colors.purple,(){
                       // Navigate to another page when save is clicked
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => const Save()));
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const Loan()));
                     }),
-                    itemDashboard('User Subscriptions', CupertinoIcons.creditcard_fill, Colors.brown,(){
-                      // Navigate to another page when pay loan is clicked
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => const PayLoan()));
-                    }),
-                    itemDashboard('Announcements', CupertinoIcons.arrowshape_turn_up_left_fill, Colors.indigo,(){
+                    itemDashboard('Announcements', CupertinoIcons.bell_fill, Colors.indigo,(){
                       // Navigate to another page when loan limit is clicked
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => LoanLimit()));
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const Announcement()));
                     }),
-                    itemDashboard('Events', CupertinoIcons.square_on_square, Colors.teal,(){
+                    itemDashboard('Events', CupertinoIcons.calendar, Colors.teal,(){
                       // Navigate to another page when request loan limit is clicked
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => RequestLoan()));
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const EventsItems()));
                     }),
                   ],
                 ),

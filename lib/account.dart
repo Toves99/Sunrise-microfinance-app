@@ -42,7 +42,7 @@ class _AccountnoState extends State<Accountno> {
       await secureStorage.write(key: 'accountNumber', value: enteredAccountNumber);
       // Account number exists for the stored email, navigate to dashboard
       showSnackBar('Verification Success....!');
-      await Future.delayed(Duration(seconds: 2));
+      await Future.delayed(Duration(seconds: 1));
       Navigator.push(context, MaterialPageRoute(builder: (context) => Dashboard()));
     } else {
       // Account number doesn't exist for the stored email, show an error message
@@ -83,9 +83,10 @@ class _AccountnoState extends State<Accountno> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Verify your account',style: TextStyle(fontSize: 16,color:Colors.white),),
-        centerTitle: true,
+        title: const Text('Verify your account',style: TextStyle(fontSize: 18,color:Colors.white,fontWeight: FontWeight.bold),),
+        centerTitle: false,
         backgroundColor: const Color.fromARGB(255, 224, 118, 9),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -174,6 +175,7 @@ class _AccountnoState extends State<Accountno> {
 
 Future<void> main() async {
   runApp(const MaterialApp(
+      debugShowCheckedModeBanner: false,
     home:Accountno(),
   ));
 }

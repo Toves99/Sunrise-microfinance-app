@@ -1,4 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:microfinance/requestloan.dart';
 
 class LoanLimit extends StatefulWidget {
   @override
@@ -6,13 +9,53 @@ class LoanLimit extends StatefulWidget {
 }
 
 class _LoanLimit extends State<LoanLimit> {
+  final FlutterSecureStorage secureStorage = const FlutterSecureStorage();
+  late String? accountNumber;
+  String? loanLimit;
+
+
+  @override
+  void initState() {
+    super.initState();
+    fetchLoanLimit();
+  }
+
+  Future<void> fetchLoanLimit() async {
+    // Retrieve account number from secure storage
+    accountNumber = await secureStorage.read(key: 'accountNumber');
+
+    if (accountNumber != null) {
+      // Query Firestore to get the ledger balance based on the account number
+      QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .where('accountNumber', isEqualTo: accountNumber)
+          .get();
+
+      if (snapshot.docs.isNotEmpty) {
+        // Retrieve ledger balance from the document
+        loanLimit = snapshot.docs.first.get('loanLimit').toString();
+        setState(() {}); // Update the UI with the fetched data
+      }
+    }
+  }
+
+  void requestLoan(){
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder:
+          (context)=>const RequestLoan()),
+    );
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Loan Limit',style: TextStyle(fontSize: 16),),
-        centerTitle: true,
+        title: const Text('Loan Limit',style: TextStyle(fontSize: 18,color: Colors.white,fontWeight: FontWeight.bold),),
+        centerTitle: false,
         backgroundColor: const Color.fromARGB(255, 224, 118, 9),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Center(
         child: Column(
@@ -37,17 +80,17 @@ class _LoanLimit extends State<LoanLimit> {
               ),
             ),
 
-            const Padding(
-              padding: EdgeInsets.only(
+            Padding(
+              padding: const EdgeInsets.only(
                   right: 30,
                   top:5
               ),
               child: Text(
-                'Ksh 15000.000',
-                style: TextStyle(
+                loanLimit == null ? 'Loading...' :'KSH ${loanLimit ?? ''}',
+                style: const TextStyle(
                     fontSize: 18,
                     fontFamily: 'Garamond',
-                    color: Colors.black,
+                    color: Colors.blue,
                     fontWeight: FontWeight.bold
                 ),
               ),
@@ -59,16 +102,16 @@ class _LoanLimit extends State<LoanLimit> {
               child: MaterialButton(
                 minWidth: double.infinity,
                 onPressed: () {
-                  //save
+                  requestLoan();
                 },
-                child: Text(
-                  'Request Now',
-                ),
-                color: Color.fromARGB(255, 224, 118, 9),
+                color: const Color.fromARGB(255, 224, 118, 9),
                 height: 40,
                 textColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Text(
+                  'Request Now',
                 ),
               ),
             ),

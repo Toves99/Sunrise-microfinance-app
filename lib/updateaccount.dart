@@ -1,9 +1,8 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-
-
+import 'dashboard.dart';
 import 'firebase_services.dart';
 class Update extends StatefulWidget {
   const Update({super.key});
@@ -13,65 +12,67 @@ class Update extends StatefulWidget {
 }
 
 class _UpdateState extends State<Update> {
-
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuthService  auth = FirebaseAuthService();
   TextEditingController emailController = TextEditingController();
   TextEditingController usernameController = TextEditingController();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   Future<void> _updateUser() async {
-    String? newEmail = emailController.text.trim();
-    const FlutterSecureStorage secureStorage = FlutterSecureStorage();
-    String? userEmail = await secureStorage.read(key: 'userEmail');
-    String username = usernameController.text.trim();
-    if (newEmail!.isNotEmpty && username.isNotEmpty) {
-      try {
-        // Update email in Firebase Authentication
-        await auth.updateUserEmail(userEmail, newEmail);
-
-        // Update user details in Firestore
-        await auth.updateUserDetails(newEmail, username);
-
-        // Update user document in Firestore
-        await FirebaseFirestore.instance.collection('users').doc(newEmail).update({
-          'email': newEmail,
-          'username': username,
-          // Add more fields to update as needed
-        });
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Profile updated successfully'),
-          ),
-        );
-      } catch (error) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Error: Unable to update profile'),
-          ),
-        );
+    String username = usernameController.text;
+    String email = emailController.text;
+    try {
+      // Update email and password in authentication system
+      User? user = _auth.currentUser;
+      if (user != null) {
+        await user.updateEmail(email);
+      } else {
+        // User is not logged in or doesn't exist
+        throw Exception("User not found");
       }
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Error: Please provide valid email and username'),
-        ),
+
+      // Update user data in Firestore
+      await _firestore.collection('users').doc(user!.uid).set(
+        {
+          'username': username,
+          'email': email,
+        },
+        SetOptions(merge: true), // Merge option to update instead of overwrite
       );
+
+      // Show a success message
+      showSnackBar('Account updated successfully!');
+      await Future.delayed(Duration(seconds: 1));
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const Dashboard()),
+      );
+    } catch (error) {
+      showSnackBar('Error updating account: $error');
+      usernameController.clear();
+      emailController.clear();
+
     }
   }
 
-
-
-
-
+  // Method to show a SnackBar
+  void showSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+      ),
+    );
+  }
 
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Update account',style: TextStyle(fontSize: 16,color:Colors.white),),
-        centerTitle: true,
+        title: const Text('Update account',style: TextStyle(fontSize: 18,color:Colors.white,fontWeight: FontWeight.bold),),
+        centerTitle: false,
         backgroundColor: const Color.fromARGB(255, 224, 118, 9),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: SingleChildScrollView(
         child: Column(

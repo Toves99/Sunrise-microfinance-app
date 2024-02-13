@@ -12,7 +12,7 @@ class LoanBalance extends StatefulWidget {
 class _LoanBalance extends State<LoanBalance> {
   final FlutterSecureStorage secureStorage = const FlutterSecureStorage();
   late String? accountNumber;
-  String? loanBalance;
+  String? loanAmount;
   String? requestedDate;
   String? paymentDate;
 
@@ -35,9 +35,9 @@ class _LoanBalance extends State<LoanBalance> {
 
       if (snapshot.docs.isNotEmpty) {
         // Retrieve ledger balance from the document
-        loanBalance = snapshot.docs.first.get('loanBalance').toString();
-        requestedDate = snapshot.docs.first.get('requestloandate').toString();
-        paymentDate = snapshot.docs.first.get('loanpaymentdate').toString();
+        loanAmount = snapshot.docs.first.get('loanAmount').toString();
+        requestedDate = snapshot.docs.first.get('requestedDate').toString();
+        paymentDate = snapshot.docs.first.get('paymentDate').toString();
         setState(() {}); // Update the UI with the fetched data
       }
     }
@@ -48,9 +48,10 @@ class _LoanBalance extends State<LoanBalance> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Loan balance',style: TextStyle(fontSize: 16,color:Colors.white),),
-        centerTitle: true,
+        title: const Text('Loan balance',style: TextStyle(fontSize: 18,color:Colors.white,fontWeight: FontWeight.bold),),
+        centerTitle: false,
         backgroundColor: const Color.fromARGB(255, 224, 118, 9),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Center(
         child: Column(
@@ -60,102 +61,117 @@ class _LoanBalance extends State<LoanBalance> {
               padding: const EdgeInsets.only(top: 60),
               child: Image.asset('assets/logo.png', height: 90, width: 100),
             ),
-            const Padding(
-              padding: EdgeInsets.only(
-                  right: 30,
-                  top:20
-              ),
-              child: Text(
-                'Loan Balance.',
-                style: TextStyle(
-                    fontSize: 20,
-                    fontFamily: 'Garamond',
-                    color: Color.fromARGB(255, 224, 118, 9),
+            Row(
+              //mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.only(
+                      left: 70,
+                      top: 40
+                  ),
+                  child: Text(
+                    'Loan Balance:',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontFamily: 'Garamond',
+                      color: Color.fromARGB(255, 224, 118, 9),
+                    ),
+                  ),
                 ),
-              ),
+                Padding(
+                  padding: const EdgeInsets.only(
+                      left: 10,
+                      top: 40
+                  ),
+                  child: Text(
+                    loanAmount == null ? 'Loading...' :'KSH ${loanAmount ?? ''}',
+                    style: const TextStyle(
+                        fontSize: 17,
+                        fontFamily: 'Garamond',
+                        color: Colors.blue,
+                        fontWeight: FontWeight.bold
+                    ),
+                  ),
+                ),
+              ],
             ),
 
-            Padding(
-              padding: const EdgeInsets.only(
-                  right: 30,
-                  top:5
+            if (loanAmount != null && (double.tryParse(loanAmount!) ?? 0) > 0)
+              Row(
+                //mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.only(
+                        left: 70,
+                        top: 20
+                    ),
+                    child: Text(
+                      'Request Date:',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontFamily: 'Garamond',
+                        color: Color.fromARGB(255, 224, 118, 9),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        left: 10,
+                        top: 20
+                    ),
+                    child: Text(
+                      requestedDate == null ? 'Loading...' :requestedDate ?? '',
+                      style: const TextStyle(
+                          fontSize: 17,
+                          fontFamily: 'Garamond',
+                          color: Colors.blue,
+                          fontWeight: FontWeight.bold
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              child: Text(
-                loanBalance ?? '',
-                style: const TextStyle(
-                    fontSize: 18,
-                    fontFamily: 'Garamond',
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold
-                ),
-              ),
-            ),
 
+            if (loanAmount != null && (double.tryParse(loanAmount!) ?? 0) > 0)
+              Row(
+                //mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.only(
+                        left: 70,
+                        top: 20
+                    ),
+                    child: Text(
+                      'Payment Date:',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontFamily: 'Garamond',
+                        color: Color.fromARGB(255, 224, 118, 9),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        left: 10,
+                        top: 20
+                    ),
+                    child: Text(
+                      paymentDate == null ? 'Loading...' :paymentDate ?? '',
+                      style: const TextStyle(
+                          fontSize: 17,
+                          fontFamily: 'Garamond',
+                          color: Colors.blue,
+                          fontWeight: FontWeight.bold
+                      ),
+                    ),
+                  ),
+                ],
+              ),
 
-            const Padding(
-              padding: EdgeInsets.only(
-                  right: 30,
-                  top:20
-              ),
-              child: Text(
-                'Requested date.',
-                style: TextStyle(
-                    fontSize: 20,
-                    fontFamily: 'Garamond',
-                    color: Color.fromARGB(255, 224, 118, 9),
-                ),
-              ),
-            ),
-
-            Padding(
-              padding: const EdgeInsets.only(
-                  right: 30,
-                  top:5
-              ),
-              child: Text(
-                requestedDate ?? '',
-                style: const TextStyle(
-                    fontSize: 18,
-                    fontFamily: 'Garamond',
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold
-                ),
-              ),
-            ),
-
-            const Padding(
-              padding: EdgeInsets.only(
-                  right: 40,
-                  top:20
-              ),
-              child: Text(
-                'Payment date.',
-                style: TextStyle(
-                    fontSize: 20,
-                    fontFamily: 'Garamond',
-                    color: Color.fromARGB(255, 224, 118, 9),
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(
-                  right: 40,
-                  top:5
-              ),
-              child: Text(
-                paymentDate ?? '',
-                style: const TextStyle(
-                    fontSize: 18,
-                    fontFamily: 'Garamond',
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold
-                ),
-              ),
-            ),
 
 
             const SizedBox(height: 30),
-            if (loanBalance != null && (double.tryParse(loanBalance!) ?? 0) > 0)
+            if (loanAmount != null && (double.tryParse(loanAmount!) ?? 0) > 0)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 30),
                 child: MaterialButton(
@@ -178,7 +194,7 @@ class _LoanBalance extends State<LoanBalance> {
                   ),
                 ),
               ),
-            if (loanBalance == null || (double.tryParse(loanBalance!) ?? 0) <= 0)
+            if (loanAmount == null || (double.tryParse(loanAmount!) ?? 0) <= 0)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 30),
                 child: MaterialButton(

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -6,13 +7,16 @@ import 'package:microfinance/payloan.dart';
 import 'package:microfinance/requestloan.dart';
 import 'package:microfinance/save.dart';
 import 'package:microfinance/savings.dart';
-import 'package:microfinance/subscribenow.dart';
-import 'package:microfinance/subscription.dart';
+import 'package:microfinance/interest.dart';
+import 'package:microfinance/userviewevents.dart';
+import 'package:microfinance/withdraw.dart';
 import 'package:microfinance/updateaccount.dart';
 import 'package:microfinance/userlogin.dart';
 
+import 'admin/viewevents.dart';
 import 'loanbalance.dart';
 import 'loanlimit.dart';
+import 'notifications.dart';
 
 void main() {
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
@@ -46,13 +50,6 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard> {
   String? userName;
-
-  @override
-  void initState() {
-    super.initState();
-    retrieveUserName();
-  }
-
   Future<void> retrieveUserName() async {
     const FlutterSecureStorage secureStorage = FlutterSecureStorage();
     String? userEmail = await secureStorage.read(key: 'userEmail');
@@ -83,7 +80,7 @@ class _DashboardState extends State<Dashboard> {
                   const SizedBox(height: 50),
                   ListTile(
                     contentPadding: const EdgeInsets.symmetric(horizontal: 30),
-                    title: Text('Hello,$userName!', style: Theme.of(context).textTheme.headline6?.copyWith(
+                    title: Text('Hello, $userName!', style: Theme.of(context).textTheme.headline6?.copyWith(
                         color: Colors.white
                     )),
                     subtitle: Padding(
@@ -146,16 +143,25 @@ class _DashboardState extends State<Dashboard> {
                     }),
                     itemDashboard('Request loan', CupertinoIcons.square_on_square, Colors.teal,(){
                       // Navigate to another page when request loan limit is clicked
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => RequestLoan()));
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const RequestLoan()));
                     }),
-                    itemDashboard('Subscrip Bal', CupertinoIcons.question_circle, Colors.blue,(){
+                    itemDashboard('Withdraw Now', CupertinoIcons.question_circle, Colors.blue,(){
                       // Navigate to another page when loan limit is clicked
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => SubBalance()));
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const Withdraw()));
                     }),
-                    itemDashboard('Subscribe Now', CupertinoIcons.square_arrow_down, Colors.pinkAccent,(){
+                    itemDashboard('Interest Earned', CupertinoIcons.square_arrow_down, Colors.pinkAccent,(){
                       // Navigate to another page when subscribe now is clicked
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => const Subscribe()));
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => Interest()));
                     }),
+                    itemDashboard('Check In', CupertinoIcons.check_mark, Colors.pinkAccent,(){
+                      // Navigate to another page when subscribe now is clicked
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const Notifications()));
+                    }),
+                    itemDashboard('Events', CupertinoIcons.calendar, Colors.pinkAccent,(){
+                      // Navigate to another page when subscribe now is clicked
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const UserEventListView()));
+                    }),
+
                   ],
                 ),
               ),
@@ -202,7 +208,6 @@ class _DashboardState extends State<Dashboard> {
     );
   }
 
-
   void _showAccountMenu(BuildContext context) {
     showModalBottomSheet<void>(
       context: context,
@@ -224,8 +229,8 @@ class _DashboardState extends State<Dashboard> {
                 },
               ),
               ListTile(
-                leading: Icon(Icons.settings),
-                title: Text('Settings'),
+                leading: const Icon(Icons.help),
+                title: const Text('Help'),
                 onTap: () {
                   // Add functionality for settings
                   Navigator.pop(context);
@@ -233,7 +238,7 @@ class _DashboardState extends State<Dashboard> {
               ),
               ListTile(
                 leading: Icon(Icons.exit_to_app),
-                title: Text('Logout'),
+                title: const Text('Logout'),
                 onTap: () {
                   // Add functionality for logout
                   Navigator.pop(context);
@@ -242,16 +247,6 @@ class _DashboardState extends State<Dashboard> {
                     MaterialPageRoute(builder: (context) => const LoginPage()), // Replace LoginPage with your login page widget
                         (route) => false, // Remove all routes until this point
                   );
-                },
-              ),
-
-              ListTile(
-                leading: const Icon(Icons.notifications),
-                title: const Text('Notification'),
-                onTap: () {
-                  // Add functionality for logout
-                  Navigator.pop(context);
-
                 },
               ),
             ],

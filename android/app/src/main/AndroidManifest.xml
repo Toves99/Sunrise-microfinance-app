@@ -2,7 +2,7 @@
 
 
     <application
-        android:label="microfinance"
+        android:label="Sunrise microfinance"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

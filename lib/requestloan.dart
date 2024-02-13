@@ -5,7 +5,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dashboard.dart';
 
 class RequestLoan extends StatefulWidget {
-  const RequestLoan({super.key});
+  const RequestLoan({Key? key}) : super(key: key);
 
   @override
   _RequestLoanState createState() => _RequestLoanState();
@@ -14,38 +14,42 @@ class RequestLoan extends StatefulWidget {
 class _RequestLoanState extends State<RequestLoan> {
   final FlutterSecureStorage secureStorage = const FlutterSecureStorage();
   TextEditingController amountController = TextEditingController();
-  String? accountNumber;
 
   @override
   void initState() {
     super.initState();
-    // Retrieve account number from secure storage
-    retrieveAccountNumber();
-  }
-
-  void retrieveAccountNumber() async {
-    String? storedAccountNumber = await secureStorage.read(key: 'accountNumber');
-    setState(() {
-      accountNumber = storedAccountNumber;
-    });
   }
 
   void requestLoan() async {
+    String? accountNumber = await secureStorage.read(key: 'accountNumber');
+
     if (accountNumber != null) {
       String enteredAmount = amountController.text;
+      String loanrequestflag='Loan requests';
       if (enteredAmount.isNotEmpty) {
         try {
-          // Insert amount into Firestore
-          await FirebaseFirestore.instance
-              .collection('users') // Assuming 'users' is the collection name
-              .doc(accountNumber) // Assuming accountNumber is the document ID
-              .set({'requestedUserLoan': enteredAmount}, SetOptions(merge: true));
-          showSnackBar('Loan requested successfully');
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder:
-                (context)=>Dashboard()),
-          );
+          // Query Firestore to find the document where accountNumber matches
+          QuerySnapshot<Map<String, dynamic>> querySnapshot = await FirebaseFirestore.instance
+              .collection('users')
+              .where('accountNumber', isEqualTo: accountNumber)
+              .get();
+
+          // Check if any document found
+          if (querySnapshot.docs.isNotEmpty) {
+            // Update the first document found (assuming accountNumber is unique)
+            await querySnapshot.docs.first.reference.update({'requestedUserLoan': enteredAmount});
+            await querySnapshot.docs.first.reference.update({'loanrequestflag': loanrequestflag});
+
+            showSnackBar('Loan request sent successfully');
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => Dashboard(),
+              ),
+            );
+          } else {
+            showSnackBar('User not found');
+          }
         } catch (e) {
           showSnackBar('Error requesting loan: $e');
         }
@@ -56,16 +60,16 @@ class _RequestLoanState extends State<RequestLoan> {
       showSnackBar('Account number not available');
     }
   }
-
   // Method to show a SnackBar
   void showSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         backgroundColor: Colors.white,
-
-        content: Center( // Center-align the text
+        content: Center(
+          // Center-align the text
           child: Text(
-            message,style: const TextStyle(color:Colors.orange,fontSize: 20),
+            message,
+            style: const TextStyle(color: Colors.orange, fontSize: 20),
             textAlign: TextAlign.center,
           ),
         ),
@@ -73,24 +77,30 @@ class _RequestLoanState extends State<RequestLoan> {
     );
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Request Loan',style: TextStyle(fontSize: 16),),
-        centerTitle: true,
+        title: const Text(
+          'Request Loan',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+        ),
+        centerTitle: false,
         backgroundColor: const Color.fromARGB(255, 224, 118, 9),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Center(child: Padding(
-              padding: const EdgeInsets.only(top: 50),
-              child: Image.asset('assets/logo.png', height: 90, width: 100),
-            )),
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 50),
+                child: Image.asset('assets/logo.png', height: 90, width: 100),
+              ),
+            ),
             const SizedBox(height: 20),
-
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 30),
               child: Form(
@@ -130,7 +140,6 @@ class _RequestLoanState extends State<RequestLoan> {
                         ),
                       ),
                     ),
-
                     const SizedBox(
                       height: 20,
                     ),
@@ -152,7 +161,6 @@ class _RequestLoanState extends State<RequestLoan> {
                         ),
                       ),
                     ),
-
                   ],
                 ),
               ),
@@ -166,6 +174,6 @@ class _RequestLoanState extends State<RequestLoan> {
 
 Future<void> main() async {
   runApp(const MaterialApp(
-    home:RequestLoan(),
+    home: RequestLoan(),
   ));
 }

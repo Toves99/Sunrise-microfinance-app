@@ -19,6 +19,8 @@ class _SignPageState extends State<SignPage> {
   TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   bool isPasswordVisible = false;
+  bool isUser = true;
+  bool isAdmin = false;
 
   Future<void> registerUser() async {
     String username=usernameController.text;
@@ -41,11 +43,14 @@ class _SignPageState extends State<SignPage> {
           'username': username,
           'email': email,
           'password':password,
+          'isUser': isUser, // Store the user type
+          'isAdmin': isAdmin,
+
 
         });
         // Show a success message
         showSnackBar('Account created successfully!');
-        await Future.delayed(Duration(seconds: 2));
+        await Future.delayed(Duration(seconds: 1));
         Navigator.push(
           context,
           MaterialPageRoute(builder:
@@ -106,9 +111,10 @@ class _SignPageState extends State<SignPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Create account',style: TextStyle(fontSize: 16,color:Colors.white),),
-        centerTitle: true,
+        title: const Text('Create account',style: TextStyle(fontSize: 18,color:Colors.white,fontWeight: FontWeight.bold),),
+        centerTitle: false,
         backgroundColor: const Color.fromARGB(255, 224, 118, 9),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -259,6 +265,12 @@ class _SignPageState extends State<SignPage> {
                         ),
                       ),
                     ),
+
+                    const SizedBox(
+                      height: 20,
+                    ),
+
+
                     const SizedBox(
                       height: 20,
                     ),
@@ -299,7 +311,13 @@ class _SignPageState extends State<SignPage> {
                       padding: const EdgeInsets.symmetric(horizontal: 35),
                       child: MaterialButton(
                         minWidth: double.infinity,
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(builder: (context) => const LoginPage()), // Replace LoginPage with your login page widget
+                                (route) => false, // Remove all routes until this point
+                          );
+                        },
                         color: Colors.white,
                         height: 40,
                         textColor: const Color.fromARGB(255, 224, 118, 9),
@@ -321,6 +339,12 @@ class _SignPageState extends State<SignPage> {
       ),
     );
   }
+}
+Future<void> main() async {
+  runApp(const MaterialApp(
+    debugShowCheckedModeBanner: false,
+    home: SignPage(),
+  ));
 }
 
 

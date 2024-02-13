@@ -1,24 +1,28 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:microfinance/subscribenow.dart';
+import 'package:microfinance/requestloan.dart';
 
-class SubBalance extends StatefulWidget {
+import 'dashboard.dart';
+
+class Interest extends StatefulWidget {
   @override
-  State<SubBalance> createState() => _SubBalance();
+  State<Interest> createState() => _Interest();
 }
 
-class _SubBalance extends State<SubBalance> {
+class _Interest extends State<Interest> {
   final FlutterSecureStorage secureStorage = const FlutterSecureStorage();
   late String? accountNumber;
-  String? subscriptionBalance;
+  String? interstEarned;
+
 
   @override
   void initState() {
     super.initState();
-    fetchsubscriptionBalance();
+    fetchInterest();
   }
-  Future<void> fetchsubscriptionBalance() async {
+
+  Future<void> fetchInterest() async {
     // Retrieve account number from secure storage
     accountNumber = await secureStorage.read(key: 'accountNumber');
 
@@ -30,22 +34,30 @@ class _SubBalance extends State<SubBalance> {
           .get();
 
       if (snapshot.docs.isNotEmpty) {
-        // Retrieve ledger balance from the document
-        subscriptionBalance = snapshot.docs.first.get('subscriptionBalance').toString();
+        // Retrieve interst balance from the document
+        interstEarned = snapshot.docs.first.get('interstEarned').toString();
         setState(() {}); // Update the UI with the fetched data
       }
     }
   }
 
+  void requestLoan(){
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => const Dashboard()), // Replace LoginPage with your login page widget
+          (route) => false, // Remove all routes until this point
+    );
+  }
 
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Subscription Balance',style: TextStyle(fontSize: 16,color:Colors.white),),
-        centerTitle: true,
+        title: const Text('Loan Limit',style: TextStyle(fontSize: 18,color: Colors.white,fontWeight: FontWeight.bold),),
+        centerTitle: false,
         backgroundColor: const Color.fromARGB(255, 224, 118, 9),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Center(
         child: Column(
@@ -61,7 +73,7 @@ class _SubBalance extends State<SubBalance> {
                   top:50
               ),
               child: Text(
-                'Subscription Balance.',
+                'Interest Earned Balance.',
                 style: TextStyle(
                   fontSize: 20,
                   fontFamily: 'Garamond',
@@ -76,41 +88,35 @@ class _SubBalance extends State<SubBalance> {
                   top:5
               ),
               child: Text(
-                subscriptionBalance ?? '',
+                interstEarned == null ? 'Loading...' :'KSH ${interstEarned ?? ''}',
                 style: const TextStyle(
                     fontSize: 18,
                     fontFamily: 'Garamond',
-                    color: Colors.black,
+                    color: Colors.blue,
                     fontWeight: FontWeight.bold
                 ),
               ),
             ),
 
             const SizedBox(height: 30),
-            if (subscriptionBalance == null || (double.tryParse(subscriptionBalance!) ?? 0) <= 0)
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 30),
-                child: MaterialButton(
-                  minWidth: double.infinity,
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder:
-                          (context)=>const Subscribe()),
-                    );
-                  },
-                  color: const Color.fromARGB(255, 224, 118, 9),
-                  height: 40,
-                  textColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: const Text(
-                    'Subscribe Now',
-                  ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 30),
+              child: MaterialButton(
+                minWidth: double.infinity,
+                onPressed: () {
+                  requestLoan();
+                },
+                color: const Color.fromARGB(255, 224, 118, 9),
+                height: 40,
+                textColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Text(
+                  'Back to Dashboard',
                 ),
               ),
-
+            ),
 
 
 

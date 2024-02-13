@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:microfinance/userlogin.dart';
 
+import 'aboutpage.dart';
+
 class SplashScreen extends StatefulWidget {
+  const SplashScreen({super.key});
+
   @override
   State<SplashScreen> createState() => _SplashScreen();
 }
@@ -27,19 +31,8 @@ class _SplashScreen extends State<SplashScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const Padding(
-                padding: EdgeInsets.only(top: 70),
-                child: Text(
-                  'Sunrise Microfinance.',
-                  style: TextStyle(
-                      fontSize: 23,
-                      fontFamily: 'Garamond',
-                      color: Colors.white,fontWeight: FontWeight.bold
-                  ),
-                ),
-              ),
               Padding(
-                padding: const EdgeInsets.only(top: 80),
+                padding: const EdgeInsets.only(top: 150),
                 child: Image.asset('assets/logo.png', height: 140, width: 500),
               ),
               const SizedBox(height: 10),
@@ -84,25 +77,48 @@ class _SplashScreen extends State<SplashScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 20),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 35),
                 child: MaterialButton(
                   minWidth: double.infinity,
                   onPressed: () {
-                    // handle button press
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder:
+                          (context)=>const About()),
+                    );
                   },
-                  child: Text(
-                    'About us',
-                  ),
                   color: Colors.white,
                   height: 40,
-                  textColor: Color.fromARGB(255, 224, 118, 9),
+                  textColor: const Color.fromARGB(255, 224, 118, 9),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
-                    side: BorderSide(color: Color.fromARGB(255, 224, 118, 9)),
+                    side: const BorderSide(color: Color.fromARGB(255, 224, 118, 9)),
+                  ),
+                  child: const Text(
+                    'About us',
                   ),
                 ),
+              ),
+              const Row(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(
+                      left: 20,
+                      top:50
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.only(
+                        left: 30
+                      ),
+                      child: Text(
+                          'Developed By:GeniusLink Creations',style: TextStyle(fontSize: 16,color: Colors.blue,fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+
+                ],
               ),
             ],
           ),
@@ -110,4 +126,10 @@ class _SplashScreen extends State<SplashScreen> {
       ),
     );
   }
+}
+Future<void> main() async {
+  runApp(const MaterialApp(
+      debugShowCheckedModeBanner: false,
+    home: SplashScreen(),
+  ));
 }
